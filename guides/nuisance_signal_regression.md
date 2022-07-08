@@ -1,17 +1,17 @@
 Nuisance signal regression
 ==========================
 
-QuNex enables flexible estimation and removal of nuisance signal in fMRI data. 
+QuNex enables flexible estimation and removal of nuisance signals in fMRI data. 
 This allows the user to:
 
 (i) estimate the presence of nuisance signal in the brain, 
 (ii) control for nuisance signal in task activation GLM analyses, and
 (iii) remove nuisance signal as a preprocessing step in preparing data for functional connectivity analyses.
 
-QuNex can handle several types of nuisance signal, which can be divided into three groups:
+QuNex can handle several types of nuisance signals, which can be divided into three groups:
 
-(i) motion correction parameters, 
-(ii) nuisance signal extracted from BOLD time series, 
+(i) motion correction parameters,  
+(ii) nuisance signal extracted from BOLD time series, and   
 (iii) any externally recorded nuisance signal(s).  
 
 We'll review how each type of spurious signal is prepared and regressed.
@@ -24,14 +24,14 @@ Head movement during BOLD signal acquisition is an important source of nuisance 
 or inflate the task-related BOLD response and cause spurious correlations in analyses of functional 
 connectivity. Removal of signals related to movement correction parameters is a standard step in 
 functional connectivity preprocessing and is sometimes also used in task activation analyses. 
-QuNex provides specific functionality for motion correction parameter regression that include 
-(a) movement parameter preparation and (b) specification of movement parameter regression in GLM modelling. 
+QuNex provides specific functionality for motion correction parameter regression that includes 
+(a) movement parameter preparation and (b) specification of movement parameter regression in GLM modeling. 
 
 Motion parameters are automatically processed and copied when data are imported from a minimal preprocessing 
 pipeline into the QuNex folder structure. When data is processed using HCP minimal processing pipelines and 
-imported into the QuNex folder structure using the 'map_hcp_data' command, the six motion parameters 
+imported into the QuNex folder structure using the `map_hcp_data` command, the six motion parameters 
 (translation in the x, y, and z directions and rotation about the X, Y, and Z axes) are copied to the 
-`sessions/<session id>/images/functional/movement folder`. For each bold file, a 'bold[N]_mov.dat' text file 
+`sessions/<session id>/images/functional/movement folder`. For each bold file, a `bold[N]_mov.dat` text file 
 is created with the following information:
 
 ```
@@ -52,30 +52,30 @@ bold image in the file name. For example, `bold3_mov.data` stores the motion cor
 for the third bold image as listed in the `batch.txt` file and as also named in the `functional` 
 folder (e.g., `bold3.nii.gz`).
 
-The motion correction parameters are then regressed during GLM modelling, implemented by 
+The motion correction parameters are then regressed during GLM modeling, implemented by 
 `preprocess_bold` and `preprocess_conc` commands. The regression of the motion parameters is specified 
 with the `--bold_nuisance` parameter. Specifically, QuNex supports the following options for motion 
 regression, which can be specified in a comma-separated string:
 
-* `m` – include the six motion corrected parameters in the regression,
-* `m1d` – include the first derivative of the six motion corrected parameters in the regression,
-* `mSq` – include the squared six motion corrected parameters in the regression,
-* `m1dSq` – include the first derivative of the squared six motion corrected parameters in the regression.
+* `m` – include the six motion correction parameters in the regression,
+* `m1d` – include the first derivative of the six motion correction parameters in the regression,
+* `mSq` – include the squared six motion correction parameters in the regression,
+* `m1dSq` – include the first derivative of the squared six motion correction parameters in the regression.
 
 The motion parameters are included in the GLM as indicated. Estimates for each of the specified 
 regressors are available in the coefficient file, and their estimated contribution to the BOLD signal 
 is removed from the residual time series.
 
 
-Regression of nuisance signal extracted from BOLD timeseries
-------------------------------------------------------------
+Regression of nuisance signal extracted from BOLD time series
+-------------------------------------------------------------
 
 The nuisance signal can be estimated and extracted from the BOLD time series itself. Three 
 types of nuisance signal estimates are most commonly extracted and used: (a) ventricular signal (V),
- (b) white matter signal (WM), (c) whole brain signal (WB). The reasoning is as follows. 
- For the V and WM signal, we assume that the cerebrospinal fluid and white matter, respectively, 
- do not contain information about neuronal activity. Any changes in the BOLD signal observed in 
- this tissue therefore do not reflect neuronal activity, but rather random MR noise, motion artifacts, 
+ (b) white matter signal (WM), and (c) whole-brain signal (WB). The reasoning is as follows. 
+ For the V and WM signals, we assume that the cerebrospinal fluid and white matter, respectively, 
+ do not contain information about the neuronal activity. Any changes in the BOLD signal observed in 
+ this tissue, therefore, do not reflect neuronal activity, but rather random MR noise, motion artifacts, 
  and/or the effects of physiological changes unrelated to neuronal activity (WM). 
 
 The rationale for removing the global signal is a little different. It assumes that although 
@@ -88,7 +88,7 @@ may contain information of interest. Therefore, the decision whether or not to r
 global signal should be made by the researcher on an informed basis, taking into account 
 the potential impact and the specific research question.
 
-### Extraction of ventricle, white matter and whole brain signal
+### Extraction of ventricle, white matter and whole-brain signal
 
 Similar to the motion correction parameters, QuNex provides specific functionality for extracting 
 and regressing BOLD time series based nuisance signal. The extraction of BOLD nuisance signal is 
@@ -107,7 +107,7 @@ Third, it loads the freesurfer brain segmentation image for that session, downsa
 image resolution, located in `sessions/<session id>/images/segmentation/freesurfer/mri/aparc+aseg_bold.nii.gz`. 
 Based on the segmentation, three masks are defined: a ventricle mask (V) containing all voxels 
 identified as any of the ventricles, a white matter mask (WM) containing all voxels identified as 
-white matter, and a whole brain mask (WB) that contains all voxels identified as gray matter. 
+white matter, and a whole-brain mask (WB) that contains all voxels identified as gray matter. 
 After these masks are created, it erodes them by removing all voxels that share a surface 
 (for V and WM masks) or more than nine edges (for WB mask) with voxels not included in the mask.
 Then it computes and saves the mean signal across all the voxels in each of the masks.
@@ -119,13 +119,13 @@ The following files are saved when running `extract_nuisance_signal` command:
 * `sessions/<session id>/images/ROI/nuisance/bold[N]_nuisance.nii.gz`  
   stores a volume image with the following frames:
   * frame 1: the first volume of the bold image
-  * frame 2: the whole brain (WB) mask
+  * frame 2: the whole-brain (WB) mask
   * frame 3: the ventricle (V) mask
   * frame 4: the white matter (WM) mask
   * frame 6: a combined mask with values 1–WB, 2—V, 3–WM
 * `sessions/<session id>/images/ROI/nuisance//bold1_nuisance.png`  
-  an image file with axial slices of the BOLD image of the brain with transparent ovelay indicating
-  whole brain (blue), ventricle (green) and white matter (red) tissue as used for extracting the nuisance signal
+  an image file with axial slices of the BOLD image of the brain with transparent overlay indicating
+  whole-brain (blue), ventricle (green) and white matter (red) tissue as used for extracting the nuisance signal
 
 An example `.nuisance` file is:
 
@@ -153,14 +153,14 @@ since boundary voxels may contain a mixture of signals due to low resolution and
 smoothing performed during minimal preprocessing. If desired, this erosion can be turned 
 off by setting the `--shrinknsroi` parameter to false.
 
-**Exclusion of brain areas from the whole brain mask**.   
+**Exclusion of brain areas from the whole-brain mask**.   
 A researcher may wish to exclude certain brain areas from the calculation of the whole 
 brain signal. For example, if a researcher is interested in functional connectivity between 
 a set of brain regions or in computing a seed map of functional connectivity with a 
 particular region, they may wish to exclude that region(s) from the calculation of the 
 global signal. This is enabled by the `--wbmask` parameter, which can be either a `.names`
 ROI definition file or a binary mask that identifies all voxels that should not be included 
-in the whole brain nuisance signal mask.
+in the whole-brain nuisance signal mask.
 
 **Inclusion of additional regions for the nuisance signal extraction**.   
 At times, a researcher may wish to extract nuisance signals from one or more additional 
